@@ -10,6 +10,7 @@ function AuthPage({ setIsLoggedIn }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [fcmToken, setFcmToken] = useState(null);
+
   useEffect(() => {
     requestForToken(setFcmToken);
   }, []);
@@ -124,7 +125,7 @@ function AuthPage({ setIsLoggedIn }) {
           type="submit"
           className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 transition-colors duration-300"
         >
-          {isLogin ? "Login" : "Sign Up"}
+          {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
         </button>
       </form>
       <p className="mt-4 text-center text-sm">
