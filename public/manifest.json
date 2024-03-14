@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Task Manager",
+  "name": "Task Manager",
+  "description": "It is a Task Management Pwa app",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +19,16 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "lang": "en-US",
+  "dir": "ltr",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "scope": "/",
+  "orientation": "portrait",
+  "serviceworker": {
+    "src": "serviceWorker.js",
+    "scope": "./"
+  }
 }
