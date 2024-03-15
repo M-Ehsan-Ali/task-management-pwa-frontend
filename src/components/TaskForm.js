@@ -77,11 +77,15 @@ function TaskForm({ selectedRecord }) {
         : `/api/tasks?user=${userId}`;
       const method = selectedRecord ? "put" : "post";
       await instance[method](endpoint, requestData);
-      sendNotification(
-        selectedRecord ? selectedRecord.title : null,
-        selectedRecord ? "Task Updated" : "Task Created",
-        fcmToken
-      );
+      if (!selectedRecord) {
+        sendNotification(
+          null,
+          `Task ${title} is due ${formattedDueDate(dueDate)}`,
+          fcmToken
+        );
+      } else {
+        sendNotification(selectedRecord.title, "Task Updated", fcmToken);
+      }
       navigate("/"); // Navigate to home page after submission
     } catch (error) {
       console.error("Error:", error);

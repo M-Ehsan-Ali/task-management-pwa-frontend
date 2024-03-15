@@ -1,34 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { calculateDifferenceInDays, renderPriority } from "../utilFunctions";
+import React from "react";
+import { renderPriority } from "../utilFunctions";
 
 const TaskDetailModal = ({
   title,
-  description,
   dueDate,
   priority,
+  description,
+  dateMessage,
+  isDueDateNear,
   handleCloseModal,
 }) => {
-  const [isDueDateNear, setIsDueDateNear] = useState(false);
-  const [dateMessage, setDateMessage] = useState("");
+  // useEffect(() => {
+  //   const differenceInDays = calculateDifferenceInDays(dueDate);
+  //   if (differenceInDays < 0) {
+  //     setIsDueDateNear(true);
+  //     setDateMessage("This task is overdue");
+  //   } else if (differenceInDays === 0) {
+  //     // Due date is today or overdue
+  //     setIsDueDateNear(true);
+  //     setDateMessage("This task's due date is today");
+  //   } else if (differenceInDays === 1) {
+  //     // Due date is tomorrow
+  //     setIsDueDateNear(true);
+  //     setDateMessage("This task's due date is approaching! It's due tomorrow");
 
-  useEffect(() => {
-    const differenceInDays = calculateDifferenceInDays(dueDate);
-    if (differenceInDays < 0) {
-      setIsDueDateNear(true);
-      setDateMessage("This task is overdue");
-    } else if (differenceInDays === 0) {
-      // Due date is today or overdue
-      setIsDueDateNear(true);
-      setDateMessage("This task's due date is today");
-    } else if (differenceInDays === 1) {
-      // Due date is tomorrow
-      setIsDueDateNear(true);
-      setDateMessage("This task's due date is approaching! It's due tomorrow");
-    } else {
-      // Due date is not near
-      setIsDueDateNear(false);
-    }
-  }, [dueDate]);
+  //     notifyUser(title, `The task "${title}" is due tomorrow`, token);
+  //   } else {
+  //     // Due date is not near
+  //     setIsDueDateNear(false);
+  //   }
+  //   // eslint-disable-next-line
+  // }, []);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">

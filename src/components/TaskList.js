@@ -5,13 +5,18 @@ import instance from "../axiosInstance";
 import { requestForToken, sendNotification } from "../firebase";
 import Alert from "./Alert/Alert";
 import TaskDetailModal from "./Modal/TaskDetailModal";
-import useProcessQueuedFormRequests, { formatDate } from "./utilFunctions";
+import useProcessQueuedFormRequests, {
+  calculateDifferenceInDays,
+  formatDate,
+} from "./utilFunctions";
 function TaskList({ selectedRecord, setSelectedRecord, clearFormData }) {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fcmToken, setFcmToken] = useState(null);
+  const [isDueDateNear, setIsDueDateNear] = useState(false);
+  const [dateMessage, setDateMessage] = useState("");
 
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
@@ -36,7 +41,7 @@ function TaskList({ selectedRecord, setSelectedRecord, clearFormData }) {
     requestForToken(setFcmToken);
     fetchTasks();
     // eslint-disable-next-line
-  }, [loading]);
+  }, []);
   useEffect(() => {
     return () => {
       processQueuedFormRequests(selectedRecord, userId, fcmToken, navigate);
@@ -72,11 +77,12 @@ function TaskList({ selectedRecord, setSelectedRecord, clearFormData }) {
       })
     );
     localStorage.removeItem("queuedDeleteRequests");
-  }, [fcmToken]);
+    // eslint-disable-next-line
+  }, []);
   useEffect(() => {
     processQueuedDeleteRequests();
     // eslint-disable-next-line
-  }, [processQueuedDeleteRequests]);
+  }, []);
 
   const handleDelete = async (taskName, taskId, userId) => {
     try {
@@ -122,6 +128,35 @@ function TaskList({ selectedRecord, setSelectedRecord, clearFormData }) {
   const handleCloseModal = () => {
     setSelectedTask(null);
   };
+  useEffect(() => {
+    tasks.forEach((task) => {
+      const differenceInDays = calculateDifferenceInDays(task.dueDate);
+      const title = task.title;
+
+      if (differenceInDays === 1) {
+        // Due date is tomorrow
+        setIsDueDateNear(true);
+        setDateMessage(`The task ${title} is due tomorrow`);
+        sendNotification(
+          title,
+          `The task "${title}" is due tomorrow`,
+          fcmToken
+        );
+      } else if (differenceInDays === 0) {
+        // Due date is today or overdue
+        setIsDueDateNear(true);
+        setDateMessage(`The task ${title} is due today`);
+        sendNotification(title, `The task "${title}" is due today`, fcmToken);
+      } else if (differenceInDays < 0) {
+        // Task is overdue
+        setDateMessage(`The task ${title} is overdue`);
+        sendNotification(title, `The task "${title}" is overdue`, fcmToken);
+      } else {
+        setIsDueDateNear(false);
+      }
+    });
+    // eslint-disable-next-line
+  }, [tasks]);
 
   return (
     <div className="container mx-auto p-4 md:p-12">
@@ -191,7 +226,9 @@ function TaskList({ selectedRecord, setSelectedRecord, clearFormData }) {
         </table>
         {selectedTask && (
           <TaskDetailModal
+            dateMessage={dateMessage}
             title={selectedTask.title}
+            isDueDateNear={isDueDateNear}
             description={selectedTask.description}
             dueDate={formatDate(selectedTask.dueDate)}
             priority={selectedTask.priority}

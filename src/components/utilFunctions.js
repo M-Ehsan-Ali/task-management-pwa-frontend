@@ -87,3 +87,25 @@ export const calculateDifferenceInDays = (date) => {
   const dueDateTime = new Date(date).getTime();
   return Math.round((dueDateTime - today.getTime()) / oneDay);
 };
+
+export const notifyUser = (title, body, token) => {
+  // Check if the browser supports notifications
+  if (!("Notification" in window)) {
+    console.error("This browser does not support desktop notification");
+    return;
+  }
+
+  // Check if permission to display notifications has been granted
+  if (Notification.permission === "granted") {
+    // If permission has been granted, create a notification
+    sendNotification(title, body, token);
+  } else if (Notification.permission !== "denied") {
+    // Otherwise, request permission from the user
+    Notification.requestPermission().then(function (permission) {
+      // If the user grants permission, create a notification
+      if (permission === "granted") {
+        sendNotification(title, body, token);
+      }
+    });
+  }
+};
