@@ -39,9 +39,10 @@ function TaskList({ selectedRecord, setSelectedRecord, clearFormData }) {
     };
 
     requestForToken(setFcmToken);
-    fetchTasks();
-    // eslint-disable-next-line
-  }, []);
+    return () => {
+      fetchTasks();
+    };
+  }, [userId]);
   useEffect(() => {
     return () => {
       processQueuedFormRequests(selectedRecord, userId, fcmToken, navigate);
